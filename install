@@ -21,3 +21,5 @@ chmod +x ./reto
 echo [+] Creating symbolic link for vuln_stack executable
 ln -s vuln_stack_nonx vuln
 
+echo [+] Deactivating ASLR protection
+echo 0 > /proc/sys/kernel/randomize_va_space

