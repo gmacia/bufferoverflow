@@ -1,0 +1,28 @@
+#!/usr/bin/python
+# Nota: para compilar 32 bits en UBUNTU18 y kali da problemas si no hacemos: 
+# sudo apt-get install gcc-multilib g++-multilib
+
+
+
+import sys
+import os
+
+if len(sys.argv)<2:
+	print 'Usage: compile <prog_name.c> [nx]'
+	print 'nx: compile with nx activated (disabled by default)'
+	exit(0)
+
+print '\n\n[+] Compilando ' + sys.argv[1]  + "..."
+
+outputName = sys.argv[1].split('.')[0]
+
+# COMPILACION SIN NX
+command = 'gcc -m32 -no-pie -fno-stack-protector -z execstack -o ' + outputName + ' -g ' + sys.argv[1]
+# COMPILACION CON NX
+if sys.argv[2] == "nx": 
+	command = 'gcc -m32 -no-pie -fno-stack-protector -o ' + outputName + ' -g ' + sys.argv[1]
+print command
+print '----------------------------------------'
+os.system(command)
+print '\n'
+
