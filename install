@@ -1,5 +1,16 @@
 #!/bin/bash
+# Fichero de instalacion para los scripts y ejemplos de buffer overflow
 
+if [ "$EUID" -ne 0  ]
+	then echo "Please run as root"
+	exit
+fi
+
+echo [+] Checking installed software
+apt update
+apt install gcc-multilib g++-multilib
+
+echo [+] Changing file permissions 
 chmod +x ./compile
 chmod +x ./rop.py
 chmod +x ./vuln_stack_nx
@@ -7,5 +18,6 @@ chmod +x ./vuln_stack_nonx
 chmod +x ./overflow_example
 chmod +x ./reto
 
+echo [+] Creating symbolic link for vuln_stack executable
 ln -s vuln_stack_nonx vuln
 

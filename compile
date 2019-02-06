@@ -17,9 +17,10 @@ print '\n\n[+] Compilando ' + sys.argv[1]  + "..."
 outputName = sys.argv[1].split('.')[0]
 
 # COMPILACION SIN NX
-command = 'gcc -m32 -no-pie -fno-stack-protector -z execstack -o ' + outputName + ' -g ' + sys.argv[1]
+if len(sys.argv)<3:
+	command = 'gcc -m32 -no-pie -fno-stack-protector -z execstack -o ' + outputName + ' -g ' + sys.argv[1]
 # COMPILACION CON NX
-if sys.argv[2] == "nx": 
+elif sys.argv[2] == "nx":
 	command = 'gcc -m32 -no-pie -fno-stack-protector -o ' + outputName + ' -g ' + sys.argv[1]
 print command
 print '----------------------------------------'
