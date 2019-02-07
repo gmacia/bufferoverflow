@@ -5,4 +5,4 @@ if [ $# -ne 1 ]; then
 fi
 
 echo [+] Starting reto server on port $1
-while true; do echo [+] Restarting socat...; socat TCP-LISTEN:12345,reuseaddr,fork SYSTEM:./reto ; done
+while true; do echo [+] Restarting socat...; socat TCP-LISTEN:$1,reuseaddr,fork SYSTEM:./reto ; done
