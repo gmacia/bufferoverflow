@@ -1,0 +1,8 @@
+
+if [ $# -ne 1 ]; then
+	echo "Usage: $0 <port>"
+	exit
+fi
+
+echo [+] Starting reto server on port $1
+while true; do echo [+] Restarting socat...; socat TCP-LISTEN:$1,reuseaddr,fork SYSTEM:./reto ; done
