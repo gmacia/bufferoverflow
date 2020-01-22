@@ -23,7 +23,7 @@ chmod +x ./stackOverflow/overflow_example
 chmod +x ./stackOverflow/reto
 
 echo [+] Creating symbolic link for vuln_stack executable
-ln -s ./stackOverflow/vuln_stack_nonx ./stackOverflow/vuln
+ln -s ./vuln_stack_nonx ./stackOverflow/vuln
 
 echo [+] Deactivating ASLR protection
 echo 0 > /proc/sys/kernel/randomize_va_space
