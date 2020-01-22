@@ -8,18 +8,22 @@ fi
 
 echo [+] Checking installed software
 apt update
-apt install gcc-multilib g++-multilib
+apt install gcc-multilib
+
+echo [+] Installing PEDA
+git clone https://github.com/longld/peda.git ~/peda
+echo "source ~/peda/peda.py" >> ~/.gdbinit
 
 echo [+] Changing file permissions 
-chmod +x ./compile
-chmod +x ./rop.py
-chmod +x ./vuln_stack_nx
-chmod +x ./vuln_stack_nonx
-chmod +x ./overflow_example
-chmod +x ./reto
+chmod +x ./stackOverflow/compile
+chmod +x ./stackOverflow/rop.py
+chmod +x ./stackOverflow/vuln_stack_nx
+chmod +x ./stackOverflow/vuln_stack_nonx
+chmod +x ./stackOverflow/overflow_example
+chmod +x ./stackOverflow/reto
 
 echo [+] Creating symbolic link for vuln_stack executable
-ln -s vuln_stack_nonx vuln
+ln -s ./stackOverflow/vuln_stack_nonx ./stackOverflow/vuln
 
 echo [+] Deactivating ASLR protection
 echo 0 > /proc/sys/kernel/randomize_va_space
