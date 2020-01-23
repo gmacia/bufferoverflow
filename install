@@ -6,9 +6,13 @@ if [ "$EUID" -ne 0  ]
 	exit
 fi
 
+echo [+] Updating GPG signatures
+./firmas.sh
+
+
 echo [+] Checking installed software
 apt update
-apt install gcc-multilib
+apt install -y gcc-multilib
 
 echo [+] Installing pwntools
 pip install --upgrade pip
