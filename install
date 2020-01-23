@@ -10,6 +10,10 @@ echo [+] Checking installed software
 apt update
 apt install gcc-multilib
 
+echo [+] Installing pwntools
+pip install --upgrade pip
+pip install pwntools
+
 echo [+] Installing PEDA
 git clone https://github.com/longld/peda.git ~/peda
 echo "source ~/peda/peda.py" >> ~/.gdbinit
