@@ -15,15 +15,15 @@ git clone https://github.com/longld/peda.git ~/peda
 echo "source ~/peda/peda.py" >> ~/.gdbinit
 
 echo [+] Changing file permissions 
-chmod +x ./stackOverflow/compile
-chmod +x ./stackOverflow/rop.py
-chmod +x ./stackOverflow/vuln_stack_nx
-chmod +x ./stackOverflow/vuln_stack_nonx
-chmod +x ./stackOverflow/overflow_example
-chmod +x ./stackOverflow/reto
+chmod +x ./stackOverflow/x86/compile
+chmod +x ./stackOverflow/x86/rop.py
+chmod +x ./stackOverflow/x86/vuln_stack_nx
+chmod +x ./stackOverflow/x86/vuln_stack_nonx
+chmod +x ./stackOverflow/x86/overflow_example
+chmod +x ./stackOverflow/x86/reto
 
 echo [+] Creating symbolic link for vuln_stack executable
-ln -s ./vuln_stack_nonx ./stackOverflow/vuln
+ln -s ./vuln_stack_nonx ./stackOverflow/x86/vuln
 
 echo [+] Deactivating ASLR protection
 echo 0 > /proc/sys/kernel/randomize_va_space
