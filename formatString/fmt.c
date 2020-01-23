@@ -1,6 +1,12 @@
+/* 
+	Compilación: gcc -g -m32 -o fmt fmt.c
+	Reto: que escriba "pronta" en lugar de "prueba"
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+
 
 void main (int argc, char *argv[]) {
 
@@ -17,5 +23,6 @@ void main (int argc, char *argv[]) {
 	printf ("Has escrito: "); 
 	printf (buffer);
 	printf ("\n");
+	printf ("Cadena: %s\n", cadena);
 
 }
