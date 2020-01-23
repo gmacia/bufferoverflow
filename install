@@ -16,6 +16,7 @@ apt install -y gcc-multilib
 
 echo [+] Installing pwntools
 pip install --upgrade pip
+apt remove -y python-capstone
 pip install pwntools
 
 echo [+] Installing PEDA
