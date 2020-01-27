@@ -21,7 +21,7 @@ apt install -y gcc-
 
 echo [+] Installing rop-tool
 git clone https://github.com/t00sh/rop-tool.git ~/rop-tool
-apt-get install libcapstone-dev
+apt-get install -y libcapstone-dev
 cd ~/rop-tool
 make
 source export PATH=$PATH:/root/rop-tool
