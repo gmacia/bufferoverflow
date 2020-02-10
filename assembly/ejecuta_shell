@@ -1,0 +1,3 @@
+nasm -f elf32 -o shell.o shell.asm
+objdump -M intel -d shell.o
+
