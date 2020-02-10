@@ -62,6 +62,13 @@ Autor: Gabriel Maciá
 		0xf7f4aaaa
 		warning: Unable to access 16000 bytes of target memory at 0xf7faa6b2, halting search.
 		1 pattern found.
+
+	Con PEDA se puede hacer: 
+		gdb-peda$ searchmem "/bin/sh" 
+		Searching for '/bin/sh' in: None ranges
+		Found 1 results, display max 1 items:
+		libc : 0xf7f52f68 ("/bin/sh")
+
 	
 	Resultados obtenidos: 
 		system:  0xf7e0ab30
