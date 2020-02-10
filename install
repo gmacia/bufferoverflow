@@ -6,21 +6,22 @@ if [ "$EUID" -ne 0  ]
 	exit
 fi
 
-echo [+] Updating GPG signatures
-./firmas.sh
-
-echo [+] Checking installed software
-apt update
-apt install -y gcc-multilib
 
 echo [+] Installing pwntools
 pip install --upgrade pip
 apt remove -y python-capstone
 pip install pwntools
 
+echo [+] Updating GPG signatures
+./firmas.sh
+
+echo [+] Checking installed software
+apt update
+apt install -y gcc-
+
 echo [+] Installing rop-tool
 git clone https://github.com/t00sh/rop-tool.git ~/rop-tool
-apt-get install libcapstone-dev
+apt-get install -y libcapstone-dev
 cd ~/rop-tool
 make
 source export PATH=$PATH:/root/rop-tool
