@@ -18,6 +18,8 @@ echo [+] Updating GPG signatures
 echo [+] Checking installed software
 apt update
 apt install -y gcc-
+ln -s gcc-6 /usr/bin/gcc 
+
 
 echo [+] Installing rop-tool
 git clone https://github.com/t00sh/rop-tool.git ~/rop-tool
