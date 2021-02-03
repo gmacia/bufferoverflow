@@ -8,8 +8,8 @@ fi
 
 
 echo [+] Installing pwntools
-pip install --upgrade pip
-apt remove -y python-capstone
+#pip install --upgrade pip
+#apt remove -y python-capstone
 pip install pwntools
 
 echo [+] Updating GPG signatures
