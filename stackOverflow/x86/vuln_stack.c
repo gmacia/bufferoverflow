@@ -37,6 +37,7 @@ Autor: Gabriel Maciá
 5) Técnica JMP ESP:  www.exploit-db.com/papers/13232
 	Evita tener que conocer la posición exacta del buffer. Es similar a la anterior, pero en este caso escribirmos el payload después del savedEIP y en el savedEIP llamamos a una instrucción JMP $ESP.
 		
+		root@kali:~/# sudo apt install framework2
 		root@kali:~/# /usr/share/framework2/msfelfscan -f ./vuln -j esp
 		0x08049461   jmp esp
 		 
