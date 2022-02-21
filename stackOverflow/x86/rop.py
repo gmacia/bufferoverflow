@@ -5,8 +5,8 @@
 # Prueba de ropping para el ejecutable vuln1_stack. 
 # 	Ejecuta de forma encadenada las funciones add_bin, add_bash y exec_string: 
 # 	add_bin: 	  0x80493af  (parametros 0xdeadbeef)
-# 	add_bash: 	  0x08049410 (parametros: 0xcafebabe, 0x0badf00d)
-# 	exec_string:  0x08049398
+# 	add_bash: 	  0x80493fc (parametros: 0xcafebabe, 0x0badf00d)
+# 	exec_string:  0x8049373
 # 	 
 # 	Para encontrar gadgets para encadenar: 
 # 	 	~/rop-tool/rop-tool gadget vuln_stack_nx 
