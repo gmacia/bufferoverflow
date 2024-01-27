@@ -6,8 +6,13 @@ if [ "$EUID" -ne 0  ]
 	exit
 fi
 
-cd
+
+
+echo [+] Updating GPG signatures and packages
+./firmas.sh
 apt update
+
+echo [+] Installing python3-pip
 apt install -y python3-pip
 
 
@@ -15,9 +20,6 @@ echo [+] Installing pwntools
 #pip install --upgrade pip
 #apt remove -y python-capstone
 pip install pwntools
-
-echo [+] Updating GPG signatures
-./firmas.sh
 
 echo [+] Checking installed software
 #apt update
@@ -27,17 +29,17 @@ apt install -y gcc-multilib  # Para la compilación con 32 bits
 #ln -s gcc-6 /usr/bin/gcc 
 
 
-echo [+] Installing rop-tool
-cd
-git clone https://github.com/t00sh/rop-tool.git ~/rop-tool
-apt-get install -y libcapstone-dev
-cd ~/rop-tool
-make
-export PATH=$PATH:/root/rop-tool
+#echo [+] Installing rop-tool
+#cd /home/kali
+#sudo -u kali git clone https://github.com/t00sh/rop-tool.git /home/kali/rop-tool
+#apt-get install -y libcapstone-dev
+#cd /home/kali/rop-tool
+#sudo -u kali make
+#sudo -u kali export PATH=$PATH:/home/kali/rop-tool
 
 echo [+] Installing PEDA
-git clone https://github.com/longld/peda.git ~/peda
-echo "source ~/peda/peda.py" >> ~/.gdbinit
+sudo -u kali git clone https://github.com/longld/peda.git /home/kali/peda
+sudo -u kali echo "source ~/peda/peda.py" >> /home/kali/.gdbinit
 
 echo [+] Deactivating ASLR protection
 echo 0 > /proc/sys/kernel/randomize_va_space
