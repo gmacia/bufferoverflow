@@ -1,5 +1,5 @@
 #!/bin/bash
-
+./
 # Installation file for buffer overflow scripts and examples
 
 if [ "$EUID" -ne 0  ]

@@ -38,7 +38,7 @@ void log_access (char *pass, int accessType) {
 	printf ("\tAccess code: %d\n\tDate and time: %s\n", accessCode, ctime(&now));
 	fflush(stdout); 
 	// Log to reto.log file
-	if (tipoAcceso == BOF1)	fprintf (f, "[+] Basic access: ");
+	if (accessType == BOF1)	fprintf (f, "[+] Basic access: ");
 	else fprintf (f, "[*] Complete access: ");
 	fprintf (f, "%s\tCode: %d\t%s", pass,accessCode,ctime(&now));
 	fclose(f);
@@ -46,8 +46,8 @@ void log_access (char *pass, int accessType) {
 
 int show_password () {
 
-	printf ("\n\t[*] The password is: %s\n\n", password_global); 
-	log_access(password_global, BOF2); 
+	printf ("\n\t[*] The password is: %s\n\n", global_password); 
+	log_access(global_password, BOF2); 
 	sleep(0.1);
 	return 0;
 }
@@ -59,8 +59,8 @@ int check_password (char *pass) {
 	char buf[32];
 	
 	memset (buf, '\0', 32);
-	if (strcmp (password_global, "") != 0) {	
-		strcpy (password, password_global);
+	if (strcmp (global_password, "") != 0) {	
+		strcpy (password, global_password);
 	}
 	strcpy (buf, pass);
 
@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
 	// Reading password from the file
 	FILE *fp = fopen ("./password.txt", "r");
     if (fp != NULL) {
-		fscanf (fp, "%s", password_global);
+		fscanf (fp, "%s", global_password);
 		fclose(fp);
     }
 
