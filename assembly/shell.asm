@@ -1,7 +1,7 @@
-; Ejemplo de shell. 
-; Para compilar: 
+; Shell example. 
+; To compile: 
 ; 	nasm -f elf32 -o shell.o shell.asm
-; Para ver los opcodes: 
+; To see the opcodes: 
 ; 	objdump -M intel -d shell.o
 
 BITS 32

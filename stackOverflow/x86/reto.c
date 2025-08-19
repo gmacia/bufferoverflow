@@ -1,12 +1,12 @@
 /*
- *	APLICACIÓN reto.c 
- * 	RETO Buffer Overflow - 2019
- * 	By: Gabriel Maciá
+ *   reto.c APPLICATION
+ *   Buffer Overflow CHALLENGE
+ *   By: Gabriel Maciá
  * 
- *  Ejecutar en servidor con: 
+ *  Run on server with: 
  *   while true; do socat TCP-LISTEN:12345,reuseaddr,fork SYSTEM:./reto ; done
  * 
- *  Acceder con: nc <ip_maquina_servidor> 12345
+ *  Access with: nc <server_ip> 12345
  */
 
 #include <stdio.h>
@@ -20,27 +20,27 @@
 #define	BOF1 1
 #define BOF2 2
 
-char password_global[30] = "";
+char global_password[30] = "";
 
-void log_access (char *pass, int tipoAcceso) {
+void log_access (char *pass, int accessType) {
 	time_t now;
 	FILE *f;
-	int codigoAcceso; 
-	
-	f = fopen("./reto.log", "a");
+	int accessCode; 
+   
+	f = fopen("./challenge.log", "a");
 	if (!f) {
-		printf ("Error al abrir fichero de log\n");
+		printf ("Error opening log file\n");
 		exit(0);
 	}
 	time (&now);
-	codigoAcceso = rand();
-	printf ("\n\t[*] Anota esta info para mandar por email al profesor: \n");
-	printf ("\tCodigo de Aceso: %d\n\tFecha y hora: %s\n", codigoAcceso, ctime(&now));
+	accessCode = rand();
+	printf ("\n\t[*] Write this info to send by email to the teacher: \n");
+	printf ("\tAccess code: %d\n\tDate and time: %s\n", accessCode, ctime(&now));
 	fflush(stdout); 
-	// Log a fichero reto.log
-	if (tipoAcceso == BOF1)	fprintf (f, "[+] Acceso basico: ");
-	else fprintf (f, "[*] Acceso completo: ");
-	fprintf (f, "%s\tCode: %d\t%s", pass,codigoAcceso,ctime(&now));
+	// Log to reto.log file
+	if (tipoAcceso == BOF1)	fprintf (f, "[+] Basic access: ");
+	else fprintf (f, "[*] Complete access: ");
+	fprintf (f, "%s\tCode: %d\t%s", pass,accessCode,ctime(&now));
 	fclose(f);
 }	
 
@@ -73,18 +73,18 @@ int check_password (char *pass) {
 
 }
 
-void imprime_banner() {
+void print_banner() {
 	
-	char mensaje[500];
+	char message[500];
 
 	FILE *f = fopen ("./banner.txt", "rt");
 	if (f != NULL) {
-		while (fgets(mensaje, 500, f) != NULL) { 		
-			printf ("%s", mensaje);
+		while (fgets(message, 500, f) != NULL) {
+			printf ("%s", message);
 		}
 	}
-	strcpy (mensaje,"--------------------------------------------------------------\n    BIENVENIDO AL RETO HACKING ETICO DE BUFFER OVERFLOW\n--------------------------------------------------------------\n	Introduzca la contraseña: ");
-	printf ("%s", mensaje);
+		strcpy (message,"--------------------------------------------------------------\n    WELCOME TO THE ETHICAL HACKING BUFFER OVERFLOW CHALLENGE\n--------------------------------------------------------------\n   Enter the password: ");
+	printf ("%s", message);
 }
 
 
@@ -94,33 +94,33 @@ int main(int argc, char *argv[])
 
     char userpass[1025];
     
-    srand(time(NULL));  // Para generar codigos de acceso
-	setbuf(stdout, 0); //Evita retrasos en el envío de printados. 
+	srand(time(NULL));  // To generate access codes
+	setbuf(stdout, 0); // Prevents delays in sending printed output. 
 	
-	// Lectura de password del fichero
+	// Reading password from the file
 	FILE *fp = fopen ("./password.txt", "r");
     if (fp != NULL) {
 		fscanf (fp, "%s", password_global);
 		fclose(fp);
     }
 
-	// Bucle principal
-    while(1)
-    {
+	// Main loop
+	while(1)
+	{
 		
-		// Envío de mensaje de pregunta de contraseña y lectura de contraseña
-		imprime_banner ();
+		// Sending password prompt message and reading the password
+		print_banner ();
 		int n = read (0, userpass, sizeof (userpass)-1);	
 		userpass[n-1] = '\0';
 
-		// Comprobacion de la contraseña recibida
-		int accesopermitido = check_password (userpass);
-		if (accesopermitido) {
-			printf ("\n\t[+] ACCESO PERMITIDO. ERES UN CRACK\n\n");
-			exit(0);
-		} else {
-			printf ("\n\t[!] password incorrecta\n");
-		}
+		// Checking the received password
+		int accesspermitted = check_password (userpass);
+			if (accesspermitted) {
+				printf ("\n\t[+] ACCESS GRANTED. YOU ARE AWESOME\n\n");
+				exit(0);
+			} else {
+				printf ("\n\t[!] Incorrect password\n");
+			}
 		
 	 }
 }

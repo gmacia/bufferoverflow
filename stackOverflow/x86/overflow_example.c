@@ -1,20 +1,20 @@
 
 /*
-Ejercicios a realizar: 
-1. Explicar el código del programa
-2. Ejecutar ./overflow_example hola
-	- Ver cómo se almacenan las variables de forma contigua en memoria. 
-	- Ver que cada variable almacena correctamente su valor. 
+Exercises to do:
+1. Explain the program code
+2. Run ./overflow_example hola
+	- See how variables are stored contiguously in memory.
+	- Check that each variable correctly stores its value.
 
-3. Ejecutar overflow en buf_dos: 
+3. Run overflow on buf_two:
 	./overflow_example 1234567890
-	- Comprobar que en buf_uno se almacena '90'
+	- Check that '90' is stored in buf_one
 
-4. Hacer overflow de value:
+4. Overflow value:
 	./overflow_example 12345678123456781
-	- Comprobar que se almacena el código ascii del '1': 49
-	
-5. Hacer overflow de value con un valor con perl: 
+	- Check that the ascii code for '1' is stored: 49
+
+5. Overflow value with a value using perl:
 	./overflow_example `perl -e 'print "1234567812345678"x2 . "\x06"'`
 
 */
@@ -27,7 +27,7 @@ Ejercicios a realizar:
 
 void usage (char *progName) {
 
-	printf ("Usage: %s <cadena>\n", progName); 
+	printf ("Usage: %s <string>\n", progName); 
 
 }
 
@@ -35,24 +35,24 @@ void usage (char *progName) {
 int main (int argc, char *argv[]) {
 
 	int value = 5; 
-	char buf_uno[8], buf_dos[8];
+	char buf_one[8], buf_two[8];
 
 	if (argc<2) {
 		usage(argv[0]);
 		exit(0);
 	}
 
-	strcpy (buf_uno, "uno"); 
-	strcpy (buf_dos, "dos"); 
+	strcpy (buf_one, "one"); 
+	strcpy (buf_two, "two"); 
 
-	printf ("\n\t[ANTES] buf_dos esta en %p y contiene \'%s\'\n", buf_dos, buf_dos); 
-	printf ("\t[ANTES] buf_uno esta en %p y contiene \'%s\'\n", buf_uno, buf_uno); 
-	printf ("\t[ANTES] value esta en %p y vale %d\n", &value, value); 
+	printf ("\n\t[BEFORE] buf_two is at %p and contains '%s'\n", buf_two, buf_two); 
+	printf ("\t[BEFORE] buf_one is at %p and contains '%s'\n", buf_one, buf_one); 
+	printf ("\t[BEFORE] value is at %p and is %d\n", &value, value); 
 
-	printf ("\n\t[STRCPY] Copiando %d bytes en buf_dos\n\n", strlen (argv[1])); 
-	strcpy (buf_dos, argv[1]); 
+	printf ("\n\t[STRCPY] Copying %d bytes into buf_two\n\n", strlen (argv[1])); 
+	strcpy (buf_two, argv[1]); 
 
-	printf ("\t[DESPUES] buf_dos esta en %p y contiene \'%s\'\n", buf_dos, buf_dos);
- 	printf ("\t[DESPUES] buf_uno esta en %p y contiene \'%s\'\n", buf_uno, buf_uno); 
-	printf ("\t[DESPUES] value esta en %p y vale %d\n\n", &value, value); 
+	printf ("\t[AFTER] buf_two is at %p and contains '%s'\n", buf_two, buf_two);
+	printf ("\t[AFTER] buf_one is at %p and contains '%s'\n", buf_one, buf_one); 
+	printf ("\t[AFTER] value is at %p and is %d\n\n", &value, value); 
 }

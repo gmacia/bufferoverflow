@@ -1,22 +1,21 @@
-# Ejercicios: el programa solamente retorna un valor 32 como salida. Se puede comprobar ejecutando: 
-# $ ./miniprograma; echo $? 
+
+# Exercises: the program only returns a value 32 as output. You can check it by running:
+# $ ./miniprograma; echo $?
 # 32
 
 
-# 1) COMPILACIÓN CON C: 
-
-# Compilar con gcc: 
-echo "[+] Compilacion con gcc (incluye libc):"
+# Compile with gcc:
+echo "[+] Compilation with gcc (includes libc):"
 gcc -o miniprograma_c miniprograma.c
-echo [+] Resultado de la ejecucion con C: 
+echo "[+] Result of execution with C:" 
 ./miniprograma_c; echo $?
 
-# Compilación en ASM
-echo "[+] Compilacion con ASM (sin libc):" 
+# Compilation in ASM
+echo "[+] Compilation with ASM (without libc):" 
 nasm -f elf32 -o miniprograma_asm.o miniprograma.asm
 ld -m elf_i386 -o miniprograma_asm miniprograma_asm.o
-echo [+] Resultado de la ejecucion
+echo "[+] Result of execution"
 ./miniprograma_asm; echo $? 
-echo [+] Comparacion de tamano de ejecutables: 
+echo "[+] Comparison of executable sizes:"
 ls -l miniprograma_c miniprograma_asm
 

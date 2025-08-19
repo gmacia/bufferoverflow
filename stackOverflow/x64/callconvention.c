@@ -1,8 +1,9 @@
-/*****
- Compilar: gcc -g -o callconvention callconvention.c
 
- Depurar con gdb: disass main
- Comprobar como se llama a la función con los parametros en: RDI, RSI, RDX
+/*****
+ Compile: gcc -g -o callconvention callconvention.c
+
+ Debug with gdb: disass main
+ Check how the function is called with the parameters in: RDI, RSI, RDX
 
  0x0000000000001135 <+0>:     push   rbp
  0x0000000000001136 <+1>:     mov    rbp,rsp

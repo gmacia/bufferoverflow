@@ -7,10 +7,10 @@ class MetasploitModule < Msf::Exploit::Remote
 
   def initialize(info = {})
     super(update_info(info,
-      'Name'		=> 'Reto HE (shellcode) - UGR Master Ciberseguridad',
-      'Description'	=> %q{
-		Esta es la descripción del módulo. 
-      },
+    'Name'		=> 'EH Challenge (shellcode) - UGR Master Cybersecurity',
+    'Description'	=> %q{
+		This is the module description.
+    },
       'Author'	=> [ 'Gabriel Macia Fernandez <gmacia@ugr.es>' ], 
       'Arch'		=> [ARCH_X86],
       'Platform'	=> 'linux',

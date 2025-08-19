@@ -4,7 +4,7 @@
 void main(int argc, char *argv[]) 
 {
   char buf[100]; 
-  printf ("Dime algo> "); 
+  printf ("Tell me something> "); 
   gets (buf);
-  printf("Has escrito: %s\n",buf); 
+  printf("You have written: %s\n", buf);
 }
