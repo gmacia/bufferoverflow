@@ -1,1 +1,1 @@
-gcc -g -o vuln vuln.c
+gcc -g -Wno-implicit-function-declaration -o vuln vuln.c
