@@ -6,9 +6,13 @@ if [ "$EUID" -ne 0  ]
 	exit
 fi
 
-VENV_DIR="../venv"
-USER="gmacia"
+########################
+# PHASE 1
+########################
 
+echo -e "\e[32m------------------------------------------------------\e[0m"
+echo -e "\e[31m[+]\e[0m \e[32mStarting phase 1. Updating of packages\e[0m"
+echo -e "\e[32m------------------------------------------------------\e[0m"
 echo -e "\e[31m[+]\e[0m \e[32mUpdating GPG signatures and packages\e[0m"
 #./signaturesKali.sh
 apt update
@@ -26,9 +30,21 @@ apt install -y python3-pip
 echo -e "\e[31m[+]\e[0m \e[32mInstalling virtualenv\e[0m"
 apt install -y python3-venv
 
+echo -e "\e[31m[+]\e[0m \e[32mPhase 1 finished. Review logs to check for errors\e[0m"
 read -p "Press [Enter] to continue..."
 
+########################
+# PHASE 2
+########################
+
+
+echo -e "\e[32m------------------------------------------------------\e[0m"
+echo -e "\e[31m[+]\e[0m \e[32mStarting phase 2. Creating python virtual environment\e[0m"
+echo -e "\e[32m------------------------------------------------------\e[0m"
+
 # Check if the virtual environment already exists
+
+VENV_DIR="../venv"
 if [ -d "$VENV_DIR" ]; then
 	read -p "The virtual environment '$VENV_DIR' already exists. Do you want to delete and recreate it? (y/n): " response
 	if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
@@ -55,10 +71,32 @@ pip install pwntools
 echo -e "\e[31m[+]\e[0m \e[32mInstalling ropper\e[0m"
 pip install ropper
 
+
+echo -e "\e[31m[+]\e[0m \e[32mPhase 2 finished. Review logs to check for errors\e[0m"
 read -p "Press [Enter] to continue..."
 
+
+########################
+# PHASE 3
+########################
+echo -e "\e[32m------------------------------------------------------\e[0m"
+echo -e "\e[31m[+]\e[0m \e[32mStarting phase 3. Configuration of GDB\e[0m"
+echo -e "\e[32m------------------------------------------------------\e[0m"
 echo -e "\e[31m[+]\e[0m \e[32mInstalling GEF (GDB Enhanced Features)\e[0m"
-sudo -u kali wget -O ~/.gdbinit-gef.py https://gef.blah.cat/py~
+sudo -u kali wget -O /home/kali/.gdbinit-gef.py https://gef.blah.cat/py~
 sudo -u kali echo "source ~/.gdbinit-gef.py" >> /home/kali/.gdbinit
 
+echo -e "\e[31m[+]\e[0m \e[32mPhase 3 finished. Review logs to check for errors\e[0m"
+read -p "Press [Enter] to continue..."
 
+
+########################
+# PHASE 4
+########################
+
+echo -e "\e[32m------------------------------------------------------\e[0m"
+echo -e "\e[31m[+]\e[0m \e[32mStarting phase 4. Disabling protections\e[0m"
+echo -e "\e[32m------------------------------------------------------\e[0m"
+# Finally, we disable ASLR protection
+./disableASLR
+echo -e "\e[31m[+]\e[0m \e[32mPhase 4 finished. Review logs to check for errors\e[0m"
