@@ -1,0 +1,10 @@
+if [ "$EUID" -ne 0  ]
+	then echo -e "\e[31m[+]\e[0m \e[32mPlease run as root\e[0m"
+	exit
+fi
+
+echo -e "\e[31m[+]\e[0m \e[32mDisabling ASLR protection\e[0m"
+echo 0 > /proc/sys/kernel/randomize_va_space
+
+result=$(cat /proc/sys/kernel/randomize_va_space)
+echo -e "\e[31m[+]\e[0m \e[32mResulted value: $result\e[0m"
