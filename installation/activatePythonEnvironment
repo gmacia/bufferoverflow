@@ -1,0 +1,6 @@
+#!/bin/bash
+
+echo "To activate the Python environment, run:"
+echo "source ../venv/bin/activate"
+
+
