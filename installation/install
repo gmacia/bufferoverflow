@@ -44,32 +44,39 @@ echo -e "\e[32m------------------------------------------------------\e[0m"
 
 # Check if the virtual environment already exists
 
+REAL_USER=${SUDO_USER:-$USER}
+
 VENV_DIR="../venv"
+
 if [ -d "$VENV_DIR" ]; then
-	read -p "The virtual environment '$VENV_DIR' already exists. Do you want to delete and recreate it? (y/n): " response
-	if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-		rm -rf "$VENV_DIR"
-		echo -e "\e[31m[+]\e[0m \e[32mDirectory '$VENV_DIR' deleted.\e[0m"
-	else
-		echo -e "\e[31m[+]\e[0m \e[32mOperation canceled. The script will terminate.\e[0m"
-		exit 1
-	fi
+    read -p "The virtual environment '$VENV_DIR' already exists. Do you want to delete and recreate it? (y/n): " response
+    if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+        rm -rf "$VENV_DIR"
+        echo -e "\e[31m[+]\e[0m \e[32mDirectory '$VENV_DIR' deleted.\e[0m"
+    else
+        echo -e "\e[31m[+]\e[0m \e[32mOperation canceled. The script will terminate.\e[0m"
+        exit 1
+    fi
 fi
 
-# Create the virtual environment
+PYTHON_STABLE="/usr/bin/python3.12" 
+
+if [ ! -f "$PYTHON_STABLE" ]; then
+    PYTHON_STABLE="/usr/bin/python3"
+fi
+
+echo -e "\e[31m[+]\e[0m \e[32mCreating virtual environment using $PYTHON_STABLE\e[0m"
+sudo -u "$REAL_USER" "$PYTHON_STABLE" -m venv "$VENV_DIR"
+
+
+# Create the virtual environment using /usr/bin/python3 as REAL_USER
 echo -e "\e[31m[+]\e[0m \e[32mCreating virtual environment '$VENV_DIR'\e[0m"
-sudo -u $USER python3 -m venv "$VENV_DIR"
+sudo -u "$REAL_USER" /usr/bin/python3 -m venv "$VENV_DIR"
 
-# Activate the virtual environment
-echo -e "\e[31m[+]\e[0m \e[32mActivating virtual environment '$VENV_DIR'\e[0m"
-source "$(realpath $VENV_DIR)/bin/activate"
-
-echo -e "\e[31m[+]\e[0m \e[32mInstalling pwntools\e[0m"
-pip install --upgrade pip
-pip install pwntools
-
-echo -e "\e[31m[+]\e[0m \e[32mInstalling ropper\e[0m"
-pip install ropper
+# Upgrade pip & install packages using the venv's pip binary directly
+echo -e "\e[31m[+]\e[0m \e[32mUpgrading pip & installing dependencies\e[0m"
+sudo -u "$REAL_USER" "$VENV_DIR/bin/pip" install --upgrade pip setuptools wheel
+sudo -u "$REAL_USER" "$VENV_DIR/bin/pip" install --prefer-binary pwntools ropper
 
 
 echo -e "\e[31m[+]\e[0m \e[32mPhase 2 finished. Review logs to check for errors\e[0m"
