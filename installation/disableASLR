@@ -6,7 +6,7 @@ if [ "$EUID" -ne 0  ]
 fi
 
 echo -e "\e[31m[+]\e[0m \e[32mDisabling ASLR protection\e[0m"
-echo 0 > /proc/sys/kernel/randomize_va_space
+echo 0 | tee /proc/sys/kernel/randomize_va_space > /dev/null
 
 result=$(cat /proc/sys/kernel/randomize_va_space)
 echo -e "\e[31m[+]\e[0m    Resulted value: $result"
